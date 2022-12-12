@@ -3,6 +3,7 @@ string caloriesFilePath = "..\\..\\..\\input.txt";
 DataAccess caloriesFile = new DataAccess(caloriesFilePath);
 var calories = caloriesFile.GetAllLinesFromFile();
 
+// Key: Elf number, Value: Total Calories Carrying
 var elfNumberByCaloriesCarrying = new Dictionary<int, int>();
 
 int currentElf = 1;
@@ -28,10 +29,15 @@ foreach (string? calorie in calories)
     }
 }
 
+// Part 1 - answer is 69310 calories
 var maxCalorie = elfNumberByCaloriesCarrying.Values.Max();
+Console.WriteLine($"Most carried calories by one elf is: {maxCalorie} ");
 
-// Answer is 69310 calories
-Console.WriteLine($"Most carried calories is: {maxCalorie} ");
+// Part 2 - answer is 206104 calories
+var topThreeTotalCalories = elfNumberByCaloriesCarrying.OrderByDescending(elfByCalorie => elfByCalorie.Value).Take(3);
+var topThreeElftotalCalories = topThreeTotalCalories.Sum(elfByCalorie => elfByCalorie.Value);
+Console.WriteLine($"Total carried calories by the top three elves is: {topThreeElftotalCalories} ");
+
 Console.ReadLine();
 
 public class DataAccess
