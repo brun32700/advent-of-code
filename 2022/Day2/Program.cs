@@ -6,6 +6,7 @@ string strategyFilePath = "..\\..\\..\\input.txt";
 DataAccess strategyFile = new DataAccess(strategyFilePath);
 var strategies = strategyFile.GetAllLinesFromFile();
 int totalScore = 0;
+int totalScorePart2 = 0;
 
 var letterByPlays = new Dictionary<string, string>()
 {
@@ -17,14 +18,22 @@ var letterByPlays = new Dictionary<string, string>()
     { "z", "scissors" }
 };
 
+var letterByOutcome = new Dictionary<string, string>()
+{
+    { "x", "lose" },
+    { "y", "draw" },
+    { "z", "win" }
+};
+
+// Part 1
 foreach (var round in strategies)
 {
     string[] opponentAndPlayerPicks = round.Split(" ");
-    string opponenPick = opponentAndPlayerPicks[0].ToLower();
+    string opponentPick = opponentAndPlayerPicks[0].ToLower();
     string playerPick = opponentAndPlayerPicks[1].ToLower();
 
     Outcome playerResult = RockPaperScissors.RoundOutcomeForPlayer(playerPick: letterByPlays[playerPick],
-                                                                   opponentPick: letterByPlays[opponenPick]);
+                                                                   opponentPick: letterByPlays[opponentPick]);
 
     if (playerResult != null)
     {
@@ -43,10 +52,31 @@ foreach (var round in strategies)
     }
 }
 
-// Part 1 - answer is 9241 total score
-Console.WriteLine($"Total score is {totalScore} if everything goes according to the strategy guide.");
+// Part 2
+foreach (var round in strategies)
+{
+    string[] opponentAndPlayerPicks = round.Split(" ");
+    string opponentPick = opponentAndPlayerPicks[0].ToLower();
+    string playerPick = opponentAndPlayerPicks[1].ToLower();
 
-// Part 2 - 
+    var itemToPlay = RockPaperScissors.GetItemBasedOnNeededOutcome(letterByOutcome[playerPick], letterByPlays[opponentPick]);
+    var playerResult = RockPaperScissors.RoundOutcomeForPlayer(itemToPlay, letterByPlays[opponentPick]);
+
+    if (Enum.TryParse<Score>(itemToPlay, true, out Score itemPlayed))
+    {
+        totalScorePart2 += RockPaperScissors.CalculateScoreForPlayer(playerResult, itemPlayed);
+    }
+    else
+    {
+        break;
+    }
+}
+
+// Part 1 - answer is 9241 total score
+Console.WriteLine($"Total score is { totalScore } if everything goes according to the strategy guide.");
+
+// Part 2 - answer is 14610 total score
+Console.WriteLine($"Total score is { totalScorePart2 } if everything goes according to the strategy guide.");
 
 Console.ReadLine();
 
@@ -99,6 +129,54 @@ public static class RockPaperScissors
     public static int CalculateScoreForPlayer(Outcome result, Score itemPlayed)
     {
         return (int)result + (int)itemPlayed;
+    }
+
+    public static string GetItemBasedOnNeededOutcome(string neededOutcome, string opponentPick)
+    {
+        switch (neededOutcome.ToLower())
+        {
+            case "lose":
+                if (opponentPick == "paper")
+                {
+                    return "rock";
+                }
+                else if (opponentPick == "scissors")
+                {
+                    return "paper";
+                }
+                else
+                {
+                    return "scissors";
+                }
+            case "draw":
+                if (opponentPick == "paper")
+                {
+                    return "paper";
+                }
+                else if (opponentPick == "scissors")
+                {
+                    return "scissors";
+                }
+                else
+                {
+                    return "rock";
+                }
+            case "win":
+                if (opponentPick == "paper")
+                {
+                    return "scissors";
+                }
+                else if (opponentPick == "scissors")
+                {
+                    return "rock";
+                }
+                else
+                {
+                    return "paper";
+                }
+            default:
+                throw new InvalidDataException($"Pick included an unknown value ( {opponentPick} ).\nMust be either rock, paper or scissors.");
+        }
     }
 }
 
