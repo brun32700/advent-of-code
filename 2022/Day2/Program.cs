@@ -1,6 +1,5 @@
 ﻿
 // Get input strategies from file
-using System.ComponentModel;
 
 string strategyFilePath = "..\\..\\..\\input.txt";
 DataAccess strategyFile = new DataAccess(strategyFilePath);
